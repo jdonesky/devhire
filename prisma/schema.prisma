@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -115,6 +116,9 @@ model Job {
   companyId       String
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+
+  // Full-text search vector — managed by a PostgreSQL trigger
+  searchVector    Unsupported("tsvector")?
 
   company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   applications Application[]
