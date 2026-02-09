@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 import { Badge } from "@/components/ui/Badge";
+import { JobActions } from "@/components/applications/JobActions";
 import {
   formatSalaryRange,
   formatExperienceLevel,
@@ -52,10 +55,36 @@ const experienceBadgeVariant: Record<string, "green" | "blue" | "amber" | "purpl
 
 export default async function JobDetailPage({ params }: Props) {
   const { id } = await params;
-  const job = await getJob(id);
+  const [job, session] = await Promise.all([
+    getJob(id),
+    getServerSession(authOptions),
+  ]);
 
   if (!job) {
     notFound();
+  }
+
+  // Check if current user has applied or saved this job
+  let hasApplied = false;
+  let isSaved = false;
+
+  if (session?.user?.id) {
+    const [application, savedJob] = await Promise.all([
+      prisma.application.findUnique({
+        where: {
+          userId_jobId: { userId: session.user.id, jobId: id },
+        },
+        select: { id: true },
+      }),
+      prisma.savedJob.findUnique({
+        where: {
+          userId_jobId: { userId: session.user.id, jobId: id },
+        },
+        select: { id: true },
+      }),
+    ]);
+    hasApplied = !!application;
+    isSaved = !!savedJob;
   }
 
   return (
@@ -171,23 +200,20 @@ export default async function JobDetailPage({ params }: Props) {
               </p>
             </div>
 
-            <div className="mb-4">
+            <div className="mb-6">
               <p className="text-sm text-gray-500">Applicants</p>
               <p className="text-xl font-semibold text-gray-900">
                 {job._count.applications}
               </p>
             </div>
 
-            <Link
-              href={`/auth/signin`}
-              className="mt-4 block w-full rounded-lg bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-blue-700"
-            >
-              Apply Now
-            </Link>
-
-            <p className="mt-3 text-center text-xs text-gray-400">
-              Sign in to apply and track your application
-            </p>
+            <JobActions
+              jobId={job.id}
+              jobTitle={job.title}
+              companyName={job.company.name}
+              hasApplied={hasApplied}
+              isSaved={isSaved}
+            />
           </div>
         </div>
       </div>
