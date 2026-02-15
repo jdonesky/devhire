@@ -35,6 +35,9 @@ yarn-error.log*
 .env*.local
 !.env.local.example
 
+# scripts (local tooling)
+/scripts/
+
 # vercel
 .vercel
 

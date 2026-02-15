@@ -17,6 +17,34 @@ export const metadata: Metadata = {
   },
   description:
     "A job board for developers. Browse remote and on-site positions, filter by tech stack, and apply with one click.",
+  keywords: [
+    "developer jobs",
+    "remote jobs",
+    "software engineer",
+    "React",
+    "TypeScript",
+    "Node.js",
+    "full stack",
+    "job board",
+  ],
+  openGraph: {
+    title: "DevHire — Find Your Next Dev Role",
+    description:
+      "Search developer jobs by tech stack, experience level, and salary. Apply with one click.",
+    type: "website",
+    locale: "en_US",
+    siteName: "DevHire",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DevHire — Find Your Next Dev Role",
+    description:
+      "Search developer jobs by tech stack, experience level, and salary.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
