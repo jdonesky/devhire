@@ -18,7 +18,7 @@ type JobCardProps = {
     experienceLevel: string;
     employmentType: string;
     techStack: string[];
-    createdAt: string;
+    createdAt: string | Date;
     company: {
       name: string;
       logo: string | null;
